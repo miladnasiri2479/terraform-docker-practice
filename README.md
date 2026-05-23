@@ -1,45 +1,45 @@
-# 🚀 Docker Infrastructure as Code (IaC) - Professional Setup
+# 🚀 زیرساخت به عنوان کد (IaC) - مدیریت داکر با ترافرم (نسخه حرفه‌ای)
 
-In proje ye nemoone-ye herfei az modiriyat-e infrastructure ba **Terraform** ruye **Docker** hast ke ba standard-haye DevOps-e ruz (Enterprise Level) refactor shode.
-
----
-
-## 🏗️ Architecture Overview
-
-In system az sakhtar-e **Modular & Multi-Environment** estefade mikone. Logic-e asli-e infrastructure tu `modules/` neveshte shode va har environment (Dev/Prod) faghade ba dadan-e variable-haye makhsoos be khodesh, in module-haro seda mizane.
-
-### Key Features:
-- **Zero-Downtime Updates:** Ba estefade az `create_before_destroy` lifecycle.
-- **Full Isolation:** State-haye Dev va Prod kamel az ham joda hastan (Directory-based isolation).
-- **Scalability:** Ghabeliyat-e scale kardan-e container-haye Web faqat ba taghyir-e ye variable.
-- **DRY Principle:** Code-haye tekrari hazf shode va module-ha reusable hastan.
+این پروژه یک نمونه کامل و استاندارد از مدیریت زیرساخت (Infrastructure) با استفاده از **Terraform** بر روی **Docker** است که با متدولوژی‌های روز DevOps و معماری چند-محیطی (Multi-Environment) طراحی و پیاده‌سازی شده است.
 
 ---
 
-## 📂 Project Structure
+## 🏗️ نگاه کلی به معماری (Architecture)
+
+این سیستم از ساختار **ماژولار (Modular)** استفاده می‌کند. منطق اصلی زیرساخت در پوشه `modules/` قرار دارد و محیط‌های مختلف (Dev و Prod) تنها با فراخوانی این ماژول‌ها و مقداردهی متغیرهای اختصاصی خود، زیرساخت را ایجاد می‌کنند.
+
+### ویژگی‌های کلیدی:
+- **Zero-Downtime Updates:** استفاده از قانون `create_before_destroy` برای جلوگیری از قطع شدن سرویس هنگام آپدیت.
+- **Isolations (جداسازی کامل):** جداسازی محیط‌های توسعه (Dev) و عملیات (Prod) از طریق دایرکتوری‌های مجزا (Directory-based isolation).
+- **Scalability (مقیاس‌پذیری):** قابلیت افزایش تعداد کانتینرهای وب تنها با تغییر یک متغیر در فایل `tfvars`.
+- **DRY Principle:** جلوگیری از تکرار کد و استفاده مجدد از ماژول‌ها در تمامی محیط‌ها.
+
+---
+
+## 📂 ساختار پروژه‌ (Directory Structure)
 
 ```text
 .
-├── modules/                # Core Infrastructure Logic
-│   ├── network/            # Software Defined Network (SDN) setup
-│   ├── db/                 # Persistent Database (Postgres) & Volumes
-│   └── web/                # Scalable Nginx Web Cluster
-└── environments/           # Environment Specific Deployments
-    ├── dev/                # Development Sandbox
-    │   ├── dev.tfvars      # Small footprint config
-    │   └── main.tf         # Module orchestration
-    └── prod/               # Production Environment
-        ├── prod.tfvars     # High Availability config
-        └── main.tf         # Module orchestration
+├── modules/                # منطق اصلی زیرساخت (قابل استفاده مجدد)
+│   ├── network/            # تنظیمات شبکه داخلی داکر (Bridge)
+│   ├── db/                 # راه‌اندازی دیتابیس Postgres و Volumeها
+│   └── web/                # کلاستر وب‌سرورهای Nginx با قابلیت اسکیل
+└── environments/           # تنظیمات اختصاصی هر محیط
+    ├── dev/                # محیط توسعه (Sandbox)
+    │   ├── dev.tfvars      # مقادیر سبک برای تست (۱ کانتینر)
+    │   └── main.tf         # مدیریت ماژول‌ها برای محیط توسعه
+    └── prod/               # محیط عملیاتی (Production)
+        ├── prod.tfvars     # مقادیر سنگین و پایدار (۵+ کانتینر)
+        └── main.tf         # مدیریت ماژول‌ها برای محیط عملیات
 ```
 
 ---
 
-## 🛠️ Deployment Guide
+## 🛠️ راهنمای استقرار (Deployment Guide)
 
-Baraye rah-andazi-e har environment, in marahel ro donbal konid:
+برای راه‌اندازی هر محیط، مراحل زیر را در ترمینال دنبال کنید:
 
-### 1. Dev Environment (Test & Debug)
+### ۱. محیط توسعه (Development)
 ```bash
 cd environments/dev
 terraform init
@@ -47,7 +47,7 @@ terraform plan -var-file="dev.tfvars"
 terraform apply -var-file="dev.tfvars" -auto-approve
 ```
 
-### 2. Prod Environment (Live Traffic)
+### ۲. محیط عملیاتی (Production)
 ```bash
 cd environments/prod
 terraform init
@@ -57,30 +57,30 @@ terraform apply -var-file="prod.tfvars" -auto-approve
 
 ---
 
-## 📊 Comparison Table
+## 📊 مقایسه محیط‌ها
 
-| Feature | Development (Dev) | Production (Prod) |
+| ویژگی | محیط توسعه (Dev) | محیط عملیاتی (Prod) |
 | :--- | :--- | :--- |
-| **Replicas** | 1 Container | 5+ Containers |
-| **Isolation** | `dev-app-network` | `prod-marketing-app-network` |
-| **Resource Prefix** | `dev-app` | `prod-marketing-app` |
-| **External Port** | 8080 | 9000+ |
-| **DB Persistence** | Yes (Volume) | Yes (Volume) |
+| **تعداد کانتینر وب** | ۱ عدد | ۵ عدد یا بیشتر |
+| **نام شبکه** | `dev-app-network` | `prod-marketing-app-network` |
+| **پیشوند منابع** | `dev-app` | `prod-marketing-app` |
+| **پورت‌های خروجی** | 8080 | +9000 |
+| **پایداری داده (DB)** | دارد (Volume) | دارد (Volume) |
 
 ---
 
-## 🧠 Senior DevOps Principles Applied
+## 🧠 اصول DevOps پیاده‌سازی شده
 
-1. **Reduction of Blast Radius:**
-   Ba joda kardan-e folder-ha, age ruye Dev eshtebahi `terraform destroy` bezanid, infrastructure-e Prod aslan dast-khorde nemishe.
+۱. **Blast Radius Reduction (کاهش شعاع تخریب):**
+با جدا کردن پوشه‌های محیط‌ها، اگر به اشتباه در محیط Dev دستوری مثل `destroy` اجرا شود، محیط اصلی (Prod) هیچ آسیبی نمی‌بیند.
 
-2. **Immutable Infrastructure:**
-   Resource-ha be surate dasti taghyir nemikonan. Har taghyiri bayad az tarighe code va cycle-e `Apply` ijad beshe.
+۲. **Immutable Infrastructure (زیرساخت تغییرناپذیر):**
+هیچ تغییری به صورت دستی روی کانتینرها اعمال نمی‌شود؛ هر تغییر باید از طریق کد و چرخه Terraform Apply صورت گیرد.
 
-3. **Stateless vs Stateful Separation:**
-   Database (Stateful) az Web (Stateless) joda shode ta modiriyat-e data va backup-giri asuntar beshe.
+۳. **Stateless vs Stateful Separation:**
+بخش دیتابیس (دارای وضعیت) از بخش وب (بدون وضعیت) جدا شده تا مدیریت داده‌ها و بک‌آپ‌گیری با امنیت و دقت بیشتری انجام شود.
 
 ---
 
-## 📞 Support
-In proje tavasot-e **Gemini CLI** (Expert DevOps Agent) refactor va mustanad-sazi shode. Age soal ya moshkeli bud, dar khedmatim! 🤘
+## 📞 پشتیبانی و تماس
+این پروژه توسط **Gemini CLI** (نماینده ارشد DevOps) بازنویسی و مستندسازی شده است. در صورت نیاز به راهنمایی بیشتر، در خدمتیم! 🤘
