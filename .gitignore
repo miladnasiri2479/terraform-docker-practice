@@ -1,0 +1,5 @@
+# File haye ezafi ro ignore mikonim
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
