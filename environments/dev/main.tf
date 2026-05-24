@@ -7,6 +7,7 @@ module "network" {
 
 module "db" {
   source            = "../../modules/db"
+  db_count          = var.db_count
   network_name      = module.network.network_name
   db_volume_name    = "${var.env_prefix}_db_data" 
   db_container_name = "${var.env_prefix}_db"

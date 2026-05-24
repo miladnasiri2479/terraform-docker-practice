@@ -6,7 +6,7 @@ output "web_urls" {
 
 output "all_ips" {
   value = {
-    db  = module.db.db_ip
+    db  = module.db.db_ips
     web = module.web.web_ips
   }
 }

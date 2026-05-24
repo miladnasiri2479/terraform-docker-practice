@@ -1,5 +1,6 @@
 resource "docker_volume" "db_data" {
-  name = var.db_volume_name
+  for_each = { for i in range(var.db_count) : i => i }
+  name     = "${var.db_volume_name}_${each.key}"
 }
 
 resource "docker_image" "postgres" {
@@ -8,7 +9,9 @@ resource "docker_image" "postgres" {
 }
 
 resource "docker_container" "db" {
-  name  = var.db_container_name
+  for_each = { for i in range(var.db_count) : i => i }
+  
+  name  = var.db_count > 1 ? "${var.db_container_name}_${each.key}" : var.db_container_name
   image = docker_image.postgres.image_id
 
   networks_advanced {
@@ -22,7 +25,7 @@ resource "docker_container" "db" {
   ]
 
   volumes {
-    volume_name    = docker_volume.db_data.name
+    volume_name    = docker_volume.db_data[each.key].name
     container_path = "/var/lib/postgresql/data"
   }
 
