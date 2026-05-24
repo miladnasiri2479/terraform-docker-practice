@@ -8,7 +8,7 @@ module "network" {
 module "db" {
   source            = "../../modules/db"
   network_name      = module.network.network_name
-  db_volume_name    = "${var.env_prefix}_db_data"
+  db_volume_name    = "${var.env_prefix}_db_data" 
   db_container_name = "${var.env_prefix}_db"
   db_user           = var.db_user
   db_password       = var.db_password

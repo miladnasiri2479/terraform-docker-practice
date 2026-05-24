@@ -12,3 +12,15 @@ terraform {
 provider "docker" {
   host = "npipe:////./pipe/docker_engine"
 }
+
+/*
+# AWS Provider Example (Dev)
+provider "aws" {
+  region = "eu-central-1"
+}
+
+# Kubernetes Provider Example (Dev)
+provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
+*/
