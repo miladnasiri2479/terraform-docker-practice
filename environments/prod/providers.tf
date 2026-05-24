@@ -9,13 +9,25 @@ terraform {
   }
 }
 
+# Logic baraye detect kardan-e OS
+locals {
+  is_windows = substr(abspath(path.root), 1, 1) == ":"
+  default_docker_host = local.is_windows ? "npipe:////./pipe/docker_engine" : "unix:///var/run/docker.sock"
+}
+
 provider "docker" {
-  host = "npipe:////./pipe/docker_engine"
+  host = var.docker_host != null ? var.docker_host : local.default_docker_host
+}
+
+variable "docker_host" {
+  type    = string
+  default = null
 }
 
 /*
 # AWS Provider Example (Prod)
-provider "aws" {
+...
+
   region = "us-east-1"
 }
 
