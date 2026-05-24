@@ -4,5 +4,5 @@ output "db_container_names" {
 
 output "db_ips" {
   description = "List of all database IP addresses"
-  value       = [for d in docker_container.db : d.network_dat a[0].ip_address]
+  value       = [for d in docker_container.db : d.network_data[0].ip_address]
 }

@@ -20,11 +20,6 @@ provider "docker" {
   host = var.docker_host != null ? var.docker_host : local.default_docker_host
 }
 
-variable "docker_host" {
-  type    = string
-  default = null
-}
-
 /*
 # AWS Provider Example (Dev)
 ...
