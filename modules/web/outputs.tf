@@ -3,5 +3,5 @@ output "web_ips" {
 }
 
 output "web_urls" {
-  value = [for i in range(var.web_count) : "http://localhost:${var.external_port_start + i}"]
+  value = [for k, v in docker_container.web : "http://localhost:${v.ports[0].external}"]
 }

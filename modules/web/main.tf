@@ -4,9 +4,10 @@ resource "docker_image" "nginx" {
 }
 
 resource "docker_container" "web" {
-  count = var.web_count
+  # Convert count to a map for for_each
+  for_each = { for i in range(var.web_count) : i => i }
   
-  name  = "${var.web_container_prefix}_${count.index}"
+  name  = "${var.web_container_prefix}_${each.key}"
   image = docker_image.nginx.image_id
 
   networks_advanced {
@@ -15,7 +16,15 @@ resource "docker_container" "web" {
 
   ports {
     internal = 80
-    external = var.external_port_start + count.index
+    external = var.external_port_start + each.value
+  }
+
+  # Healthcheck for Observability
+  healthcheck {
+    test     = ["CMD", "curl", "-f", "http://localhost"]
+    interval = "30s"
+    retries  = 3
+    timeout  = "10s"
   }
 
   lifecycle {
