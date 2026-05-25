@@ -6,7 +6,7 @@ resource "docker_image" "nginx" {
 }
 
 # 2. Web Containers
-# Sakht kantenir-haye Nginx be tedad moshakhas shode (web_count).
+# Sakht container-haye Nginx be tedad moshakhas shode (web_count).
 resource "docker_container" "web" {
   # Tabdil count be map baraye estefade dar for_each (herfei tar az count)
   for_each = { for i in range(var.web_count) : i => i }
@@ -19,7 +19,7 @@ resource "docker_container" "web" {
 
   }
 
-  # Tanzimate port-haye kantenir (Mapping be port-haye host)
+  # Tanzimate port-haye container (Mapping be port-haye host)
   ports {
     internal = 80
     external = var.external_port_start + each.value

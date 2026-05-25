@@ -27,14 +27,14 @@ locals {
 }
 
 # 2. Network Module
-# Sakhte shabakeye dakheliye dacker baraye ertebat-e amne kantenir-ha.
+# Sakhte shabakeye dakheliye dacker baraye ertebat-e amne container-ha.
 module "network" {
   source       = "./modules/network"
   network_name = "${local.resource_prefix}_network"
 }
 
 # 3. Database Module
-# Rah-andaziye kantenir-haye database ba dade-haye paydar.
+# Rah-andaziye container-haye database ba dade-haye paydar.
 module "db" {
   source            = "./modules/db"
   network_name      = module.network.network_name
@@ -48,7 +48,7 @@ module "db" {
 }
 
 # 4. Web Module
-# Rah-andaziye kantenir-haye web (Nginx) ba ghabeliate scale-up.
+# Rah-andaziye container-haye web (Nginx) ba ghabeliate scale-up.
 module "web" {
   source               = "./modules/web"
   network_name         = module.network.network_name
@@ -60,7 +60,8 @@ module "web" {
 }
 
 # 5. Ansible Inventory Generation
-# Sakhte khodkare inventory file baraye modiriate kantenir-ha tavasote Ansible.
+# Dar in ghesmat baraye darak-e kamel-e mafhome "Full Infrastructure as Code",
+# file inventory-ye Ansible ro be soorate dynamic misazim ta tamame zirsakht yekparche bashad.
 resource "local_file" "ansible_inventory" {
   filename = "${path.module}/ansible/inventory.ini"
   content  = <<EOT

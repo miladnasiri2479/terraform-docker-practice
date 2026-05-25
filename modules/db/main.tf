@@ -13,7 +13,7 @@ resource "docker_image" "postgres" {
 }
 
 # 3. Database Containers
-# Sakht kantenir-ha ba tanzimati mesle Network, Environment Variables va Healthcheck.
+# Sakht container-ha ba tanzimati mesle Network, Environment Variables va Healthcheck.
 resource "docker_container" "db" {
   for_each = { for i in range(var.db_count) : i => i }
   
