@@ -15,6 +15,8 @@
 - **Isolations (جداسازی کامل):** جداسازی محیط‌های توسعه (Dev) و عملیات (Prod) از طریق دایرکتوری‌های مجزا (Directory-based isolation).
 - **Scalability (مقیاس‌پذیری):** قابلیت افزایش تعداد کانتینرهای وب تنها با تغییر یک متغیر در فایل `tfvars`.
 - **DRY Principle:** جلوگیری از تکرار کد و استفاده مجدد از ماژول‌ها در تمامی محیط‌ها.
+- **Health Monitoring:** مانیتورینگ خودکار سلامت کانتینرها (Postgres و Nginx).
+- **Ansible Ready:** تولید خودکار فایل Inventory برای مدیریت سریع با Ansible.
 
 ---
 
@@ -22,26 +24,35 @@
 
 ```text
 .
+├── .github/workflows/      # مدیریت CI/CD با استفاده از GitHub Actions
 ├── modules/                # منطق اصلی زیرساخت (قابل استفاده مجدد)
 │   ├── network/            # تنظیمات شبکه داخلی داکر (Bridge)
 │   ├── db/                 # راه‌اندازی دیتابیس Postgres و Volumeها
 │   └── web/                # کلاستر وب‌سرورهای Nginx با قابلیت اسکیل
-└── environments/           # تنظیمات اختصاصی هر محیط
-    ├── dev/                # محیط توسعه (Sandbox)
-    │   ├── dev.tfvars      # مقادیر سبک برای تست (۱ کانتینر)
-    │   └── main.tf         # مدیریت ماژول‌ها برای محیط توسعه
-    └── prod/               # محیط عملیاتی (Production)
-        ├── prod.tfvars     # مقادیر سنگین و پایدار (۵+ کانتینر)
-        └── main.tf         # مدیریت ماژول‌ها برای محیط عملیات
+├── environments/           # تنظیمات اختصاصی هر محیط
+│   ├── dev/                # محیط توسعه (Sandbox)
+│   └── prod/               # محیط عملیاتی (Production)
+├── ansible/                # محل ذخیره فایل‌های تولید شده برای Ansible
+└── terraform.tfvars.example # نمونه متغیرهای مورد نیاز پروژه
 ```
 
 ---
 
 ## 🛠️ راهنمای استقرار (Deployment Guide)
 
-برای راه‌اندازی هر محیط، مراحل زیر را در ترمینال دنبال کنید:
+### ۱. پیش‌نیازها
+- نصب بودن **Terraform** (نسخه ۱.۵.۰ به بالا)
+- نصب و فعال بودن **Docker**
+- نصب بودن **Git**
 
-### ۱. محیط توسعه (Development)
+### ۲. تنظیم متغیرها
+ابتدا فایل‌های نمونه را کپی کرده و مقادیر خود را جایگزین کنید:
+```bash
+cp terraform.tfvars.example terraform.tfvars
+cp environments/dev/dev.tfvars.example environments/dev/dev.tfvars
+```
+
+### ۳. اجرای پروژه (مثلاً در محیط Dev)
 ```bash
 cd environments/dev
 terraform init
@@ -49,40 +60,45 @@ terraform plan -var-file="dev.tfvars"
 terraform apply -var-file="dev.tfvars" -auto-approve
 ```
 
-### ۲. محیط عملیاتی (Production)
-```bash
-cd environments/prod
-terraform init
-terraform plan -var-file="prod.tfvars"
-terraform apply -var-file="prod.tfvars" -auto-approve
-```
+---
+
+## ⚙️ تنظیمات و متغیرها (Configuration)
+
+برای حفظ امنیت، فایل‌های حاوی مقادیر حساس در Git ذخیره نمی‌شوند. 
+**نکته امنیتی:** تمامی فایل‌های `.tfvars` در `.gitignore` تعریف شده‌اند تا به اشتباه در مخزن آنلاین منتشر نشوند.
 
 ---
 
-## 📊 مقایسه محیط‌ها
+## 🔄 تفاوت محیط‌های مبتنی بر دایرکتوری و Terraform Workspaces
 
-| ویژگی | محیط توسعه (Dev) | محیط عملیاتی (Prod) |
-| :--- | :--- | :--- |
-| **تعداد کانتینر وب** | ۱ عدد | ۵ عدد یا بیشتر |
-| **نام شبکه** | `dev-app-network` | `prod-marketing-app-network` |
-| **پیشوند منابع** | `dev-app` | `prod-marketing-app` |
-| **پورت‌های خروجی** | 8080 | +9000 |
-| **پایداری داده (DB)** | دارد (Volume) | دارد (Volume) |
+در این پروژه از هر دو متد برای مدیریت محیط‌ها استفاده شده است:
+
+1.  **جداسازی مبتنی بر دایرکتوری (Directory-based Isolation):** برای جداسازی کامل فایل‌های State و تنظیمات Backend در محیط‌های `dev` و `prod`.
+2.  **ترافرم ورک‌سپیس (Terraform Workspaces):** در لایه کد (Root main.tf) از `terraform.workspace` برای هوشمندسازی نام‌گذاری منابع و تفکیک آن‌ها در سطح Docker استفاده شده است.
 
 ---
 
-## 🧠 اصول DevOps پیاده‌سازی شده
+## 🤖 اتصال به Ansible (Ansible Integration)
 
-۱. **Blast Radius Reduction (کاهش شعاع تخریب):**
-با جدا کردن پوشه‌های محیط‌ها، اگر به اشتباه در محیط Dev دستوری مثل `destroy` اجرا شود، محیط اصلی (Prod) هیچ آسیبی نمی‌بیند.
+پس از اجرای `terraform apply` در هر محیط، یک فایل Inventory به صورت خودکار در مسیر `ansible/inventory.ini` تولید می‌شود:
 
-۲. **Immutable Infrastructure (زیرساخت تغییرناپذیر):**
-هیچ تغییری به صورت دستی روی کانتینرها اعمال نمی‌شود؛ هر تغییر باید از طریق کد و چرخه Terraform Apply صورت گیرد.
+1.  **تولید فایل داینامیک:** ترافرم IPهای کانتینرها را در گروه‌های `[webservers]` و `[dbservers]` می‌نویسد.
+2.  **استفاده:**
+    ```bash
+    ansible-playbook -i ansible/inventory.ini your-playbook.yml
+    ```
 
-۳. **Stateless vs Stateful Separation:**
-بخش دیتابیس (دارای وضعیت) از بخش وب (بدون وضعیت) جدا شده تا مدیریت داده‌ها و بک‌آپ‌گیری با امنیت و دقت بیشتری انجام شود.
+---
+
+## 🧪 چرخه CI/CD (GitHub Actions)
+
+پروژه دارای یک Pipeline حرفه‌ای در `.github/workflows/terraform.yml` است که با هر Push یا Pull Request کارهای زیر را انجام می‌دهد:
+- بررسی فرمت کدها (`fmt`)
+- اعتبارسنجی دستورات (`validate`)
+- اجرای `plan` به صورت تستی برای هر دو محیط Dev و Prod.
 
 ---
 
 ## 📞 تماس و پشتیبانی
+
 این پروژه برای اهداف آموزشی و عملیاتی طراحی شده است. در صورت نیاز به راهنمایی بیشتر، می‌توانید از طریق گیت‌هاب با من در ارتباط باشید! 🤘

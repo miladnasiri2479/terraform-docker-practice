@@ -14,6 +14,8 @@ module "db" {
   db_user           = var.db_user
   db_password       = var.db_password
   db_name           = var.db_name
+  db_image          = var.db_image
+  db_image_tag      = var.db_image_tag
 }
 
 module "web" {

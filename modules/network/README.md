@@ -9,6 +9,7 @@
 ## متغیرها (Variables)
 
 - **network_name**: نام شبکه برای ایجاد در داکر.
+    - **مثال:** `dev-app_network` یا `prod-main_net`
 
 ## خروجی‌ها (Outputs)
 

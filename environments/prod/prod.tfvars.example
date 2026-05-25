@@ -1,0 +1,3 @@
+# Example Prod Environment Variables
+# These values override defaults in the prod environment
+# No specific variables defined in prod/variables.tf yet, but here is where they would go.

@@ -1,17 +1,32 @@
-# environments/dev/variables.tf
 variable "db_count" {
-  type    = number
-  default = 1
+  type        = number
+  description = "Number of database instances"
+  default     = 1
+
+  validation {
+    condition     = var.db_count >= 1
+    error_message = "Database count must be at least 1."
+  }
 }
 
-variable "env_prefix" { type = string }
-variable "web_count" { type = number }
-variable "external_port_start" { type = number }
-variable "db_user" { type = string }
-variable "db_password" { type = string }
-variable "db_name" { type = string }
-
-variable "docker_host" {
-  type    = string
-  default = null
+variable "db_image" {
+  type        = string
+  description = "Docker image for the database"
+  default     = "postgres"
 }
+variable "db_image_tag" {
+  description = "Docker Image Tag for the Database"
+}
+
+variable "db_volume_name" {}
+variable "db_container_name" {}
+variable "network_name" {}
+variable "db_user" {}
+variable "db_password" {}
+variable "db_name" {}
+variable "external_port_start" {}
+variable "web_count" {}
+variable "env_prefix" {}
+variable "docker_host" {}
+
+

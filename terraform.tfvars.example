@@ -1,0 +1,9 @@
+# Example Root Variables
+project_name = "mock_app"
+db_password  = "mock_password_123"
+db_name      = "mock_db"
+db_user      = "mock_user"
+db_image     = "postgres"
+db_image_tag = "13-alpine"
+web_image    = "nginx"
+web_image_tag = "alpine"

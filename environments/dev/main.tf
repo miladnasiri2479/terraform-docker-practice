@@ -9,11 +9,13 @@ module "db" {
   source            = "../../modules/db"
   db_count          = var.db_count
   network_name      = module.network.network_name
-  db_volume_name    = "${var.env_prefix}_db_data" 
+  db_volume_name    = "${var.env_prefix}_db_data"
   db_container_name = "${var.env_prefix}_db"
   db_user           = var.db_user
   db_password       = var.db_password
   db_name           = var.db_name
+  db_image          = var.db_image
+  db_image_tag      = var.db_image_tag
 }
 
 module "web" {

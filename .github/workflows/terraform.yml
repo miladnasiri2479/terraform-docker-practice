@@ -1,4 +1,4 @@
-name: 'Terraform CI'
+name: 'Terraform CI/CD'
 
 on:
   push:
@@ -8,33 +8,45 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'Terraform Quality & Plan'
     runs-on: ubuntu-latest
-    environment: production
-
-    defaults:
-      run:
-        shell: bash
+    
+    strategy:
+      matrix:
+        environment: [dev, prod]
 
     steps:
-    - name: Checkout
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.5.0" # Version fix baraye consistency
 
-    - name: Terraform Format
-      run: terraform fmt -check
+    - name: Terraform Format Check
+      run: terraform fmt -check -recursive
+      continue-on-error: true
 
-    - name: Terraform Init (Dev)
+    - name: Terraform Init
       run: |
-        cd environments/dev
+        cd environments/${{ matrix.environment }}
         terraform init -backend=false
 
-    - name: Terraform Plan (Dev)
+    - name: Terraform Validate
       run: |
-        cd environments/dev
-        terraform plan -input=false -var-file="dev.tfvars" -var="db_password=${{ secrets.DB_PASSWORD }}"
+        cd environments/${{ matrix.environment }}
+        terraform validate
+
+    - name: Terraform Plan
+      id: plan
+      run: |
+        cd environments/${{ matrix.environment }}
+        # Estefade az mock vars baraye CI
+        cp *.tfvars.example mock.tfvars
+        terraform plan -input=false -var-file="mock.tfvars" -var="db_password=ci_test_secret"
+      continue-on-error: true

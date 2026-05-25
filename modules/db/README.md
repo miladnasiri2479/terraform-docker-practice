@@ -10,10 +10,15 @@
 
 ## متغیرها (Variables)
 
-- **db_volume_name**: نام Volume دیتابیس.
+- **db_count**: تعداد دیتابیس‌هایی که باید ساخته شوند.
+    - **مثال:** `1`
+- **db_volume_name**: نام Volume دیتابیس برای ذخیره داده‌ها.
+    - **مثال:** `postgres_data`
 - **db_container_name**: نام کانتینر دیتابیس.
+    - **مثال:** `production_db_server`
 - **network_name**: نام شبکه‌ای که دیتابیس باید به آن وصل شود.
 - **db_user / db_password / db_name**: اطلاعات دسترسی به دیتابیس.
+    - **مثال:** `user: admin`, `db: app_db`
 
 ## خروجی‌ها (Outputs)
 

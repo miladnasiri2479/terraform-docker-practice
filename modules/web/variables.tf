@@ -19,3 +19,16 @@ variable "network_name" {
 variable "external_port_start" {
   type = number
 }
+
+variable "web_image" {
+  type        = string
+  description = "Docker image for the web server"
+  default     = "nginx"
+}
+
+variable "web_image_tag" {
+  type        = string
+  description = "Docker image tag for the web server"
+  default     = "alpine"
+}
+

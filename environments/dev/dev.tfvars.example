@@ -1,0 +1,3 @@
+# Example Dev Environment Variables
+# These values override defaults in the dev environment
+# No specific variables defined in dev/variables.tf yet, but here is where they would go.
